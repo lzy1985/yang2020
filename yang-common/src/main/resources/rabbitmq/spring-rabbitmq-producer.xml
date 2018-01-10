@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/rabbit
+	   http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd"
+       default-lazy-init="true">
+
+    <description>RabbitMQ示例 发送消息配置</description>
+
+    <!--引入基础配置 -->
+    <import resource="classpath*:/rabbitmq/spring-rabbitmq.xml"/>
+
+    <!--
+        声明队列
+        durable:是否持久化 默认true
+        exclusive: 仅创建者可以使用的私有队列，断开后自动删除 默认false
+        auto_delete: 当所有消费客户端连接断开后，是否自动删除队列 默认false
+        exclusive="true",排他锁，声明的队列只能被当前对象使用 默认false;
+    -->
+    <rabbit:queue id="queue.direct" name="queue.direct" declared-by="rabbitAdmin"/>
+    <rabbit:queue id="queue.topic" name="queue.topic" declared-by="rabbitAdmin"/>
+
+    <!--
+        定义一个exchange
+        rabbit:direct-exchange：定义exchange模式为direct，意思就是消息与一个特定的路由键完全匹配，才会转发。
+        rabbit:binding：设置消息queue匹配的key
+    -->
+    <!-- direct 交换器 ,auto-delete="true"时，当声明Exchange的连接断开时，Exchange会被删除掉 -->
+    <rabbit:direct-exchange id="exchange.direct"
+                            auto-declare="true" name="exchange.direct" auto-delete="false"
+                            durable="true" declared-by="rabbitAdmin">
+        <rabbit:bindings>
+            <rabbit:binding key="queue.direct" queue="queue.direct"/>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <!-- topic 交换器 ,auto-delete="true"时，当声明Exchange的连接断开时，Exchange会被删除掉 -->
+    <rabbit:topic-exchange id="exchange.topic"
+                           auto-declare="true" name="exchange.topic" auto-delete="false" durable="true"
+                           declared-by="rabbitAdmin">
+        <rabbit:bindings>
+            <rabbit:binding pattern="queue.topic" queue="queue.topic" exchange=""/>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+</beans>

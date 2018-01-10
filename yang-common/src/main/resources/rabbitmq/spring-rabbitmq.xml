@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/rabbit
+	   http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd
+	   http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util-4.0.xsd"
+       default-lazy-init="true">
+
+    <description>RabbitMQ 配置</description>
+
+    <!-- 扫描 rabbitmq包 -->
+    <!--<context:component-scan base-package="com.study.yang"/>-->
+
+    <!--配置connection-factory，指定连接rabbit server参数  配置集群，host换为addresses="${rabbit.host}-->
+    <rabbit:connection-factory id="rabbitConnectionFactory"
+                               host="${rabbit.host}"
+                               username="${rabbit.username}"
+                               password="${rabbit.password}"
+                               virtual-host="${rabbit.vhost}"
+                               cache-mode="CHANNEL"
+                               channel-cache-size="25"
+                               requested-heartbeat="10000"
+                               connection-timeout="60000"
+                               />
+    <!--通过指定下面的admin信息，当前producer中的exchange和queue会在rabbitmq服务器上自动生成-->
+    <rabbit:admin id="rabbitAdmin"
+                  connection-factory="rabbitConnectionFactory"
+                  auto-startup="true"
+                  ignore-declaration-exceptions="false"/>
+
+    <!-- RabbitMQ Template -->
+    <rabbit:template id="rabbitTemplate"
+                     connection-factory="rabbitConnectionFactory"
+                     retry-template="retryTemplate"
+                     message-converter="jsonMessageConverter"/>
+
+    <!-- 消息对象json转换类 -->
+    <bean id="jsonMessageConverter" class="org.springframework.amqp.support.converter.Jackson2JsonMessageConverter"/>
+
+    <!-- retryTemplate start -->
+    <bean id="retryTemplate" class="org.springframework.retry.support.RetryTemplate">
+        <property name="retryContextCache" ref="mapRetryContextCache"/>
+        <property name="retryPolicy">
+            <bean class="org.springframework.retry.policy.SimpleRetryPolicy">
+                <property name="maxAttempts" value="3"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="mapRetryContextCache" class="org.springframework.retry.policy.MapRetryContextCache"/>
+    <!-- retryTemplate end -->
+
+
+    <!-- 消费者监听器，AOP -->
+    <bean id="missingMessageIdAdvice" class="org.springframework.amqp.rabbit.retry.MissingMessageIdAdvice">
+        <constructor-arg index="0" ref="mapRetryContextCache"/>
+    </bean>
+
+    <!-- 重做拦截器 -->
+    <bean id="retryOperationsInterceptor"
+          class="org.springframework.amqp.rabbit.config.StatefulRetryOperationsInterceptorFactoryBean">
+        <property name="retryOperations" ref="retryTemplate"/>
+    </bean>
+
+    <util:list id="adviceChain">
+        <ref bean="missingMessageIdAdvice"/>
+        <ref bean="retryOperationsInterceptor"/>
+    </util:list>
+</beans>

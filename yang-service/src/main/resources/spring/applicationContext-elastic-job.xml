@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:job="http://www.dangdang.com/schema/ddframe/job"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.dangdang.com/schema/ddframe/job
+       http://www.dangdang.com/schema/ddframe/job/job.xsd">
+	
+	<!--配置作业注册中心 -->
+    <!--<bean id="yang-job-regCenter" class="com.dangdang.ddframe.reg.zookeeper.ZookeeperRegistryCenter" init-method="init">
+        <constructor-arg>
+            <bean class="com.dangdang.ddframe.reg.zookeeper.ZookeeperConfiguration">
+                <property name="serverLists" value="${zookeeper.address}"/>
+                <property name="namespace" value="letter/job"/>
+                <property name="baseSleepTimeMilliseconds" value="1000"/>
+                <property name="maxSleepTimeMilliseconds" value="3000"/>
+                <property name="maxRetries" value="3"/>
+            </bean>
+        </constructor-arg>
+    </bean>-->
+
+	<!-- 调度配置 -->
+	<!-- 定时demo 每分钟执行一次-->
+	<!--<job:bean id="demoTask" class="com.study.yang.job.DemoTask"
+		regCenter="letter-job-regCenter"  cron="0 */1 * * * ?"
+		shardingTotalCount="1" />-->
+
+</beans>

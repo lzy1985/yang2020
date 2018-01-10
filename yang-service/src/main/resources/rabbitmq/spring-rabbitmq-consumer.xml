@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/rabbit
+	   http://www.springframework.org/schema/rabbit/spring-rabbit-1.4.xsd
+	   http://www.springframework.org/schema/context
+	   http://www.springframework.org/schema/context/spring-context.xsd"
+       default-lazy-init="true">
+
+    <description>RabbitMQ示例 接收消息 配置</description>
+
+    <!--引入基础配置 -->
+    <import resource="classpath*:rabbitmq/spring-rabbitmq.xml"/>
+
+    <context:component-scan base-package="com.study.yang.mq"/>
+
+    <!--
+       声明队列
+       durable:是否持久化 默认true
+       exclusive: 仅创建者可以使用的私有队列，断开后自动删除 默认false
+       auto_delete: 当所有消费客户端连接断开后，是否自动删除队列 默认false
+       exclusive="true",排他锁，声明的队列只能被当前对象使用 默认false;
+    -->
+    <rabbit:queue id="queue.direct" name="queue.direct" declared-by="rabbitAdmin"/>
+    <rabbit:queue id="queue.topic" name="queue.topic" declared-by="rabbitAdmin"/>
+
+
+    <rabbit:direct-exchange name="amqpExchange" durable="true" auto-delete="false" id="amqpExchangeId">
+        <rabbit:bindings>
+            <rabbit:binding queue="queue.direct" key="queue.direct"/>
+        </rabbit:bindings>
+    </rabbit:direct-exchange>
+
+    <!-- 定义exchange，模式为topic -->
+    <rabbit:topic-exchange id="exchange.topic.consumer" name="exchange.topic.consumer" durable="true" auto-delete="false" >
+    	<rabbit:bindings>
+            <rabbit:binding pattern="queue.topic" queue="queue.topic" exchange=""/>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+
+    <!--
+        接收消息监听器
+        acknowledge="auto",接收到消息后，服务端会直接删掉，不管消息在客户端有没有处理成功;
+        acknowledge="manual",服务端会在客户端处理完毕后，反馈处理成功消息后删掉消息;
+
+        初始消费者线程数 concurrency="3"
+        预取数量（一次从RabbitMQ Server上取到的数据数量），prefetch="10"
+
+        error-handler="MessageErrorHandler"
+        一个错误处理策略的引用，来处理在监听器执行过程中的没有捕获到的异常。默认值是ConditionalRejectingErrorHandler。
+
+        task-executor="myExecutor"
+        这个属性表示，在执行listener时，使用的线程行为。默认为SimpleAsyncTaskExecutor，即每执行一个listener，都创建一条新的线程。
+
+        concurrency="10"
+        这个表示每个listener创建多少个消费者（会创建多少个进程来消费）所以，如果想要多线程执行，就要配置concurrency，因为默认情况下，它是1.
+        如果还配置了task-executor，就要特别注意task-executor要有足够的线程来满足执行.建议配置这个为>1，
+        因为如果只有一个进程的话，会阻塞后面的消息队列。但如果有多个消费者的话，那一个进程的阻塞，并不会导致其他进程的阻塞.
+    -->
+    <!-- <rabbit:listener-container id="listener.test.1"
+                               acknowledge="auto" concurrency="3" transaction-size="10"
+                               prefetch="10" max-concurrency="5" auto-startup="true" advice-chain="adviceChain"
+                               auto-declare="true"
+                               connection-factory="rabbitConnectionFactory">
+        <rabbit:listener queues="queue.pricing.input" ref="receiveMsgManager" method="handPricingInputMsg"/>
+    </rabbit:listener-container> -->
+
+    <rabbit:listener-container id="listenerDirect"
+                               concurrency="3"
+                               transaction-size="10" prefetch="10" max-concurrency="4"
+                               advice-chain="adviceChain"
+                               connection-factory="rabbitConnectionFactory"
+                               message-converter="jsonMessageConverter">
+        <rabbit:listener queues="queue.direct" ref="receiveMqService" method="receiveDirectMessage"/>
+    </rabbit:listener-container>
+
+    <rabbit:listener-container id="listenerTopic"
+                               concurrency="3"
+                               transaction-size="10" prefetch="10" max-concurrency="4"
+                               advice-chain="adviceChain"
+                               connection-factory="rabbitConnectionFactory"
+                               message-converter="jsonMessageConverter">
+        <rabbit:listener queues="queue.topic" ref="receiveMqService" method="receiveTopicMessage"/>
+    </rabbit:listener-container>
+</beans>

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.yang.userpermission.dao.IUserPermissionDAO">
+    <resultMap id="UserPermissionResultMap" type="com.study.yang.userpermission.entity.UserPermissionEntity">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="u_id" property="uId" jdbcType="INTEGER"/>
+        <result column="permission_id" property="permissionId" jdbcType="INTEGER"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="select_column_list">SELECT id,u_id,permission_id,type</sql>
+    <sql id="select_count_sql">SELECT COUNT(1) FROM bc_user_permission</sql>
+    <sql id="insert_table_sql">INSERT INTO bc_user_permission</sql>
+    <sql id="insert_into_sql">INSERT INTO bc_user_permission (u_id,permission_id,type)</sql>
+    <sql id="update_table_sql">UPDATE bc_user_permission</sql>
+    <sql id="delete_from_sql">DELETE FROM bc_user_permission</sql>
+    <sql id="from_sql">FROM bc_user_permission</sql>
+    <sql id="order_by_sql">ORDER BY id DESC</sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.study.yang.userpermission.entity.UserPermissionEntity">
+        <include refid="insert_into_sql"/>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{uId,jdbcType=INTEGER},
+            #{permissionId,jdbcType=INTEGER},
+            #{type,jdbcType=TINYINT},
+        </trim>
+    </insert>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.study.yang.userpermission.entity.UserPermissionEntity">
+        <include refid="insert_table_sql"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="uId != null">u_id,</if>
+                <if test="permissionId != null">permission_id,</if>
+                <if test="type != null">type,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+                <if test="uId != null">#{uId,jdbcType=INTEGER},</if>
+                <if test="permissionId != null">#{permissionId,jdbcType=INTEGER},</if>
+                <if test="type != null">#{type,jdbcType=TINYINT},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        <include refid="insert_into_sql"/>
+        <trim prefix="VALUES" suffixOverrides=",">
+            <if test="list != null">
+                <foreach collection="list" item="item" index="index" separator=",">
+                    <trim prefix="(" suffix=")" suffixOverrides=",">
+                        #{item.uId,jdbcType=INTEGER},
+                        #{item.permissionId,jdbcType=INTEGER},
+                        #{item.type,jdbcType=TINYINT},
+                    </trim>
+                </foreach>
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.study.yang.userpermission.entity.UserPermissionEntity">
+        <include refid="update_table_sql"/>
+        <set>
+            u_id = #{uId,jdbcType=INTEGER},
+            permission_id = #{permissionId,jdbcType=INTEGER},
+            type = #{type,jdbcType=TINYINT},
+        </set>
+        <where>
+            id = #{id,jdbcType=INTEGER}
+        </where>
+    </update>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.study.yang.userpermission.entity.UserPermissionEntity">
+        <include refid="update_table_sql"/>
+        <set>
+                    <if test="uId != null">u_id = #{uId,jdbcType=INTEGER},</if>
+                    <if test="permissionId != null">permission_id = #{permissionId,jdbcType=INTEGER},</if>
+                    <if test="type != null">type = #{type,jdbcType=TINYINT},</if>
+        </set>
+        <where>
+           id = #{id,jdbcType=INTEGER}
+        </where>
+    </update>
+
+    <select id="selectEntityById" resultMap="UserPermissionResultMap" parameterType="java.lang.Integer">
+        <include refid="select_column_list"/>
+        <include refid="from_sql"/>
+        <where>
+        id = #{id,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="selectByParams" resultMap="UserPermissionResultMap" parameterType="java.util.HashMap">
+        <include refid="select_column_list"/>
+        <include refid="from_sql"/>
+        <where>
+            <if test="id != null">
+                AND id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="uId != null">
+                AND u_id = #{uId,jdbcType=INTEGER}
+            </if>
+            <if test="permissionId != null">
+                AND permission_id = #{permissionId,jdbcType=INTEGER}
+            </if>
+            <if test="type != null">
+                AND type = #{type,jdbcType=TINYINT}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN (" separator="," close=")">
+                #{id,jdbcType=INTEGER}
+                </foreach>
+            </if>
+        </where>
+        <include refid="order_by_sql"/>
+    </select>
+
+    <select id="selectByEntity" resultMap="UserPermissionResultMap" parameterType="com.study.yang.userpermission.entity.UserPermissionEntity">
+        <include refid="select_column_list"/>
+        <include refid="from_sql"/>
+        <where>
+            <if test="id != null">
+                AND id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="uId != null">
+                AND u_id = #{uId,jdbcType=INTEGER}
+            </if>
+            <if test="permissionId != null">
+                AND permission_id = #{permissionId,jdbcType=INTEGER}
+            </if>
+            <if test="type != null">
+                AND type = #{type,jdbcType=TINYINT}
+            </if>
+        </where>
+        <include refid="order_by_sql"/>
+    </select>
+
+    <update id="deleteById" parameterType="java.lang.Integer">
+        <include refid="delete_from_sql"/>
+        <where>
+            id = #{id,jdbcType=INTEGER}
+        </where>
+    </update>
+
+    <update id="deleteByParams" parameterType="java.util.HashMap">
+        <include refid="delete_from_sql"/>
+        <where>
+            <if test="id != null">
+                AND id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="uId != null">
+                AND u_id = #{uId,jdbcType=INTEGER}
+            </if>
+            <if test="permissionId != null">
+                AND permission_id = #{permissionId,jdbcType=INTEGER}
+            </if>
+            <if test="type != null">
+                AND type = #{type,jdbcType=TINYINT}
+            </if>
+        </where>
+    </update>
+
+</mapper>

@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.study.yang.permission.dao.IPermissionDAO">
+    <resultMap id="PermissionResultMap" type="com.study.yang.permission.entity.PermissionEntity">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="p_id" property="pId" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="code" property="code" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="TINYINT"/>
+        <result column="icon" property="icon" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="sort" property="sort" jdbcType="TINYINT"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="updator" property="updator" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="select_column_list">SELECT id,p_id,name,code,type,icon,url,status,sort,update_time,updator</sql>
+    <sql id="select_count_sql">SELECT COUNT(1) FROM bc_permission</sql>
+    <sql id="insert_table_sql">INSERT INTO bc_permission</sql>
+    <sql id="insert_into_sql">INSERT INTO bc_permission (p_id,name,code,type,icon,url,status,sort,update_time,updator)</sql>
+    <sql id="update_table_sql">UPDATE bc_permission</sql>
+    <sql id="delete_from_sql">DELETE FROM bc_permission</sql>
+    <sql id="from_sql">FROM bc_permission</sql>
+    <sql id="order_by_sql">ORDER BY id DESC</sql>
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.study.yang.permission.entity.PermissionEntity">
+        <include refid="insert_into_sql"/>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+            #{pId,jdbcType=INTEGER},
+            #{name,jdbcType=VARCHAR},
+            #{code,jdbcType=VARCHAR},
+            #{type,jdbcType=TINYINT},
+            #{icon,jdbcType=VARCHAR},
+            #{url,jdbcType=VARCHAR},
+            #{status,jdbcType=TINYINT},
+            #{sort,jdbcType=TINYINT},
+            #{updateTime,jdbcType=TIMESTAMP},
+            #{updator,jdbcType=INTEGER},
+        </trim>
+    </insert>
+
+    <insert id="insertSelective" useGeneratedKeys="true" keyProperty="id" parameterType="com.study.yang.permission.entity.PermissionEntity">
+        <include refid="insert_table_sql"/>
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                <if test="pId != null">p_id,</if>
+                <if test="name != null">name,</if>
+                <if test="code != null">code,</if>
+                <if test="type != null">type,</if>
+                <if test="icon != null">icon,</if>
+                <if test="url != null">url,</if>
+                <if test="status != null">status,</if>
+                <if test="sort != null">sort,</if>
+                <if test="updateTime != null">update_time,</if>
+                <if test="updator != null">updator,</if>
+        </trim>
+        <trim prefix="VALUES (" suffix=")" suffixOverrides=",">
+                <if test="pId != null">#{pId,jdbcType=INTEGER},</if>
+                <if test="name != null">#{name,jdbcType=VARCHAR},</if>
+                <if test="code != null">#{code,jdbcType=VARCHAR},</if>
+                <if test="type != null">#{type,jdbcType=TINYINT},</if>
+                <if test="icon != null">#{icon,jdbcType=VARCHAR},</if>
+                <if test="url != null">#{url,jdbcType=VARCHAR},</if>
+                <if test="status != null">#{status,jdbcType=TINYINT},</if>
+                <if test="sort != null">#{sort,jdbcType=TINYINT},</if>
+                <if test="updateTime != null">#{updateTime,jdbcType=TIMESTAMP},</if>
+                <if test="updator != null">#{updator,jdbcType=INTEGER},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        <include refid="insert_into_sql"/>
+        <trim prefix="VALUES" suffixOverrides=",">
+            <if test="list != null">
+                <foreach collection="list" item="item" index="index" separator=",">
+                    <trim prefix="(" suffix=")" suffixOverrides=",">
+                        #{item.pId,jdbcType=INTEGER},
+                        #{item.name,jdbcType=VARCHAR},
+                        #{item.code,jdbcType=VARCHAR},
+                        #{item.type,jdbcType=TINYINT},
+                        #{item.icon,jdbcType=VARCHAR},
+                        #{item.url,jdbcType=VARCHAR},
+                        #{item.status,jdbcType=TINYINT},
+                        #{item.sort,jdbcType=TINYINT},
+                        #{item.updateTime,jdbcType=TIMESTAMP},
+                        #{item.updator,jdbcType=INTEGER},
+                    </trim>
+                </foreach>
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKey" parameterType="com.study.yang.permission.entity.PermissionEntity">
+        <include refid="update_table_sql"/>
+        <set>
+            p_id = #{pId,jdbcType=INTEGER},
+            name = #{name,jdbcType=VARCHAR},
+            code = #{code,jdbcType=VARCHAR},
+            type = #{type,jdbcType=TINYINT},
+            icon = #{icon,jdbcType=VARCHAR},
+            url = #{url,jdbcType=VARCHAR},
+            status = #{status,jdbcType=TINYINT},
+            sort = #{sort,jdbcType=TINYINT},
+            update_time = #{updateTime,jdbcType=TIMESTAMP},
+            updator = #{updator,jdbcType=INTEGER},
+        </set>
+        <where>
+            id = #{id,jdbcType=INTEGER}
+        </where>
+    </update>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.study.yang.permission.entity.PermissionEntity">
+        <include refid="update_table_sql"/>
+        <set>
+                    <if test="pId != null">p_id = #{pId,jdbcType=INTEGER},</if>
+                    <if test="name != null">name = #{name,jdbcType=VARCHAR},</if>
+                    <if test="code != null">code = #{code,jdbcType=VARCHAR},</if>
+                    <if test="type != null">type = #{type,jdbcType=TINYINT},</if>
+                    <if test="icon != null">icon = #{icon,jdbcType=VARCHAR},</if>
+                    <if test="url != null">url = #{url,jdbcType=VARCHAR},</if>
+                    <if test="status != null">status = #{status,jdbcType=TINYINT},</if>
+                    <if test="sort != null">sort = #{sort,jdbcType=TINYINT},</if>
+                    <if test="updateTime != null">update_time = #{updateTime,jdbcType=TIMESTAMP},</if>
+                    <if test="updator != null">updator = #{updator,jdbcType=INTEGER},</if>
+        </set>
+        <where>
+           id = #{id,jdbcType=INTEGER}
+        </where>
+    </update>
+
+    <select id="selectEntityById" resultMap="PermissionResultMap" parameterType="java.lang.Integer">
+        <include refid="select_column_list"/>
+        <include refid="from_sql"/>
+        <where>
+        id = #{id,jdbcType=INTEGER}
+        </where>
+    </select>
+
+    <select id="selectByParams" resultMap="PermissionResultMap" parameterType="java.util.HashMap">
+        <include refid="select_column_list"/>
+        <include refid="from_sql"/>
+        <where>
+            <if test="id != null">
+                AND id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="pId != null">
+                AND p_id = #{pId,jdbcType=INTEGER}
+            </if>
+            <if test="name != null">
+                AND name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="code != null">
+                AND code = #{code,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                AND type = #{type,jdbcType=TINYINT}
+            </if>
+            <if test="icon != null">
+                AND icon = #{icon,jdbcType=VARCHAR}
+            </if>
+            <if test="url != null">
+                AND url = #{url,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                AND status = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="sort != null">
+                AND sort = #{sort,jdbcType=TINYINT}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updator != null">
+                AND updator = #{updator,jdbcType=INTEGER}
+            </if>
+            <if test="ids != null">
+                <foreach collection="ids" index="index" item="id" open=" AND id IN (" separator="," close=")">
+                #{id,jdbcType=INTEGER}
+                </foreach>
+            </if>
+        </where>
+        <include refid="order_by_sql"/>
+    </select>
+
+    <select id="selectByEntity" resultMap="PermissionResultMap" parameterType="com.study.yang.permission.entity.PermissionEntity">
+        <include refid="select_column_list"/>
+        <include refid="from_sql"/>
+        <where>
+            <if test="id != null">
+                AND id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="pId != null">
+                AND p_id = #{pId,jdbcType=INTEGER}
+            </if>
+            <if test="name != null">
+                AND name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="code != null">
+                AND code = #{code,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                AND type = #{type,jdbcType=TINYINT}
+            </if>
+            <if test="icon != null">
+                AND icon = #{icon,jdbcType=VARCHAR}
+            </if>
+            <if test="url != null">
+                AND url = #{url,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                AND status = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="sort != null">
+                AND sort = #{sort,jdbcType=TINYINT}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updator != null">
+                AND updator = #{updator,jdbcType=INTEGER}
+            </if>
+        </where>
+        <include refid="order_by_sql"/>
+    </select>
+
+    <update id="deleteById" parameterType="java.lang.Integer">
+        <include refid="delete_from_sql"/>
+        <where>
+            id = #{id,jdbcType=INTEGER}
+        </where>
+    </update>
+
+    <update id="deleteByParams" parameterType="java.util.HashMap">
+        <include refid="delete_from_sql"/>
+        <where>
+            <if test="id != null">
+                AND id = #{id,jdbcType=INTEGER}
+            </if>
+            <if test="pId != null">
+                AND p_id = #{pId,jdbcType=INTEGER}
+            </if>
+            <if test="name != null">
+                AND name = #{name,jdbcType=VARCHAR}
+            </if>
+            <if test="code != null">
+                AND code = #{code,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                AND type = #{type,jdbcType=TINYINT}
+            </if>
+            <if test="icon != null">
+                AND icon = #{icon,jdbcType=VARCHAR}
+            </if>
+            <if test="url != null">
+                AND url = #{url,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                AND status = #{status,jdbcType=TINYINT}
+            </if>
+            <if test="sort != null">
+                AND sort = #{sort,jdbcType=TINYINT}
+            </if>
+            <if test="updateTime != null">
+                AND update_time = #{updateTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test="updator != null">
+                AND updator = #{updator,jdbcType=INTEGER}
+            </if>
+        </where>
+    </update>
+
+</mapper>
