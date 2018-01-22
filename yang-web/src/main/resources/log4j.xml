@@ -9,7 +9,7 @@
     </appender>
 
     <appender name="file" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="File" value="${catalina.home}/logs/letter/letter-web.log"/>
+        <param name="File" value="/Users/lzy/work/tomcat-7.0.81/logs/yang/yang-web.log"/>
         <param name="DatePattern" value="'_'yyyy-MM-dd'.log'" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} | %p| %F:%L| [%thread] [%X{traceId}] %m [%r]%n"/>
@@ -17,7 +17,7 @@
     </appender>
 
     <appender name="sqlFile" class="org.apache.log4j.DailyRollingFileAppender">
-        <param name="File" value="${catalina.home}/logs/letter/letter-sql.log"/>
+        <param name="File" value="/Users/lzy/work/tomcat-7.0.81/logs/logs/yang/yang-sql.log"/>
         <param name="DatePattern" value="'_'yyyy-MM-dd'.log'" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} | %p| %F:%L| [%thread] [%X{traceId}] %m [%r]%n"/>
