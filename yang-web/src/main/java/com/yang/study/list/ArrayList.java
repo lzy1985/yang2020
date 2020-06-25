@@ -28,10 +28,10 @@ public class ArrayList {
 
     public static void main(String[] args) {
         System.out.println("_++++++++");
-//        removeFori();
-//        removeForEach();
-//        removeItertor1();
-//        removeItertor2();
+        removeFori();
+        removeForEach();
+        removeItertor1();
+        removeItertor2();
 
     }
 
