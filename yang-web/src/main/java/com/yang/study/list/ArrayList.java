@@ -27,6 +27,7 @@ public class ArrayList {
     }
 
     public static void main(String[] args) {
+        System.out.println("_++++++++");
 //        removeFori();
 //        removeForEach();
 //        removeItertor1();
@@ -41,13 +42,14 @@ public class ArrayList {
             list.remove(str);
         }
         //从后往前删除，可以删除干净
-//        for (int i = list.size()-1; i >=0; i--) {
-//            String str = list.get(i);
-//            list.remove(str);
-//            System.out.println(JSONUtils.toJson(list));
-//        }
+        for (int i = list.size()-1; i >=0; i--) {
+            String str = list.get(i);
+            list.remove(str);
+            System.out.println(JSONUtils.toJson(list));
+        }
 
         System.out.println(JSONUtils.toJson(list));
+        System.out.println("---------");
     }
 
     public static void removeForEach(){
